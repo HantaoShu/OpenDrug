@@ -123,5 +123,5 @@ Email: sht18@mails.tsinghua.edu.cn, majianzhu@gmail.com
 ---
 
 ## License
-DeepDrug is licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
+OpenDrug is licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
 
