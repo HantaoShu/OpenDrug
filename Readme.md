@@ -68,7 +68,7 @@ For further details, see Online Methods of our paper.
 cd src\
 python train.py --drug_id <drug_id> --data_dir <data_dir> --model_dir <model_dir>\
 for example:
-python train_LOO.py --drug_id 11 --data_dir ../example_data --model_dir ../model
+python train_LOO.py --drug_id 11 --data_dir ../example_data --model_dir ../model\
 </code>
     Here, we provide a leave-one-out cross-validation implementation which is convenient for further interpreting model.
     We also provide baseline methods implementation which are compared in our paper. Baseline methods can be trained 
