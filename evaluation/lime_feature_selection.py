@@ -1,5 +1,6 @@
 import argparse
 import pickle
+import os
 
 import lime.lime_tabular
 import numpy as np
@@ -49,9 +50,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--drug_id', type=str, help='drug ID', default='11')
     parser.add_argument('--data_dir', type=str, default='../example_data/')
-    parser.add_argument('--index_list', type=str, help='test index range')
+    parser.add_argument('--index_list', type=str, help='test index range',default='../example_data/11_index_list')
     parser.add_argument('--model_dir', type=str, default='../model/')
-    parser.add_argument('--output_dir', type=str, default='../output/lime/')
+    parser.add_argument('--output_dir', type=str, default='../evaluation_output/lime/')
     parser.add_argument('--gpu', type=int, help='GPU ID')
     args = parser.parse_args()
 
@@ -159,8 +160,12 @@ if __name__ == '__main__':
 
         new_data = {}
         new_data['lime_feature_selection_result'] = {'p_list': p_list, 'y_test_pred_list': y_test_pred_list}
-        lime_file = f'{args.output_dir}/{drug_id}/l_{drug_id}_{test_index}.pickle'
+        if not os.path.isdir(args.output_dir):
+            os.makedirs(args.output_dir)
+        if not os.path.isdir(args.output_dir + '/' + drug_id):
+            os.makedirs(args.output_dir + '/' + drug_id)
+        representor_file = f'{args.output_dir}/{drug_id}/OpenDrug_{drug_id}_{test_index}.pickle'
+        lime_file = f'{args.output_dir}/{drug_id}/LIME_{drug_id}_{test_index}.pickle'
         with open(lime_file, 'wb') as f:
             pickle.dump(new_data, f)
-
         print(test_index, 'finished')

@@ -1,7 +1,9 @@
 import argparse
 import pickle
 
+from tqdm import tqdm
 import dgl
+import os
 import dgl.function as fn
 import networkx as nx
 import numpy as np
@@ -10,6 +12,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from scipy.stats import pearsonr
 from sklearn.model_selection import KFold
+import pickle
 
 
 class MLP(nn.Module):
@@ -119,6 +122,7 @@ class Net(nn.Module):
         self.output_layer = nn.Linear(num_hidden_units, output_dim)
 
     def forward(self, g, features):
+        g = g.to(torch.device('cuda'))
         x = self.gcn1(g, features)
         for hidden_layer in self.layers:
             x = hidden_layer(x)
@@ -147,7 +151,7 @@ def train_gcn(data_path):
     gcn_results[0] = np.linspace(0.00, 0.99, 100)
     representer_value_matrix = data['representer_value_matrix']
 
-    for index, p in enumerate(gcn_results[0]):
+    for index, p in tqdm(enumerate(gcn_results[0])):
 
         num_neighbors = int(num_samples * p)
         g_dgl = generate_graph(representer_value_matrix, num_samples, num_neighbors)
@@ -244,11 +248,13 @@ def train_gcn_random(data_path):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', type=str, default='../example_data/')
-    parser.add_argument('--type', type=str, default='../example_data/')
-    parser.add_argument('--gpu', type=int, help='GPU ID')
+    parser.add_argument('--data_path', type=str, default='../example_data/11.pickle')
+    parser.add_argument('--type', type=str, default='OpenDrug')
+    parser.add_argument('--output_dir', type=str, default='../evaluation_output/gcn/')
     args = parser.parse_args()
+    if not os.path.isdir(args.output_dir):
+        os.makedirs(args.output_dir)
     if args.type=='random':
-        train_gcn_random(args.data_path)
+        pickle.dump(train_gcn_random(args.data_path),open(args.output_dir+args.type+'.pkl','wb'))
     if args.type=='OpenDrug':
-        train_gcn(args.data_path)
+        pickle.dump(train_gcn(args.data_path),open(args.output_dir+args.type+'.pkl','wb'))

@@ -5,14 +5,14 @@
 This directory contains the code and resources of the following paper:
 
 <i>"Using representer point selection for interpretable drug response prediction 
-". Under review. </i>
+" Under review. </i>
 
 
 ## Overview of the Model
 
 
 <p align="center">
-<img  src="figure/OpenDrug1.png" width="800" height="400" > 
+<img  src="figure/OpenDrug1.png"> 
 </p>
 
 OpenDrug is a two step interpretable deep learning model for drug response prediction. OpenDrug is a kind of post-hoc
@@ -24,7 +24,8 @@ For each drug, we trained a multi-layer neural network model to predict the drug
 features (gene expression and mutation feature) of each cell
  
 ### Step 2. Interpreting OpenDrug and identify important training example and feature.
-
+For each drug and each testing cell line, the importance of training data and feature can be interpreted by 
+reanalysis the neural network.  
 
 
 
@@ -56,15 +57,16 @@ For further details, see Online Methods of our paper.
 <br>
 
 ## Dependency
-- python 3.5
-- pytorch 1.5.0
-- ogb
+- python 3.7
+- pytorch 1.7.0+cu101
+- ogb 1.2.4+cu101
 - scikit-learn 0.23.2
+- lime 0.2.0.1
 ## Code Usage
 1. Train OpenDrug to predict drug response. 
 <code>  
-cd src \
-python train.py --drug_id <drug_id> --data_dir <data_dir> --model_dir <model_dir> \
+cd src\
+python train.py --drug_id <drug_id> --data_dir <data_dir> --model_dir <model_dir>\
 for example:
 python train_LOO.py --drug_id 11 --data_dir ../example_data --model_dir ../model
 </code>
@@ -73,30 +75,52 @@ python train_LOO.py --drug_id 11 --data_dir ../example_data --model_dir ../model
     using 
     following 
     command.\
-<code>
+ <code>
 cd baseline_methods\
 python run_{elastic_net,linear_model,rf,svr}.py  --drug_id <drug_id> --data_dir <processed data path> --model_dir <path
  to save 
 model> \
 </code>
 
-2. Interpreting OpenDrug and identify important training example and feature.
+2. Interpreting OpenDrug and identify important training example and feature.\
 <code> 
 cd src\
-python generate_representer_matrix_index.py --drug_id <drug_id> --data_dir <data_dir> --index_list <test_index_list> 
+python generate_representer_matrix_index.py --drug_id <drug_id> --data_dir <processed data path>> --index_list <test_index_list> 
 --model_dir <model path> --output_dir <path to save interprate result> 
 </code>
 
     where test_index_list denote the test example index list corresponding to index in processed data pickle. The output 
 file is save in numpy format whose weight(W<sub>ij</sub>) represent importance of feature j on training data i.
 
-3. Evaluate  
+3. Evaluating important training example and feature\
+    Evaluation 1: OpenDrug perform better than other methods with identified important training feature. \
+    <code>cd evaluation\
+    python  Open_Drug_feature_selection.py --drug_id <drug_id> --data_dir <processed data path> --index_list 
+    <test_index_list> --model_dir <saved training model> --output_dir <path to save performance result> \
+    </code>
+    Similarly, other feature interpreting baseline can be evaluated by \
+    <code> 
+    cd evaluation
+    python  random_feature_selection.py --drug_id <drug_id> --data_dir <processed data path> --index_list 
+    <test_index_list> --output_dir <path to save performance result> \
+    python  lime_feature_selection.py --drug_id <drug_id> --data_dir <processed data path> --index_list 
+    <test_index_list> --output_dir <path to save performance result> \
+    </code>
+   The output result is saved in pickle file including predicted drug response and test data index.
+   
+   
+   Evaluation 2: Verifying the representers using graph convolutional networks (GCN).
+   <code> 
+   cd evaluation\
+   python train_gcn.py --data_path <path save processed data and representer graph> --type <random/OpenDrug>\
+   </code>
+  The output result is saved in pickle file including person correlation with different percentage of top feature 
+  selected.
+  ---
+If you have any question, please feel free to contact to me.
+Email: sht18@mails.tsinghua.edu.cn, majianzhu@gmail.com
 
-We identify important training example and features using graph convolutional neural network (GCN). We train a single
- layer GCN model to predict drug response by only using important training example identified by OpenDrug. The 
- important feature identified by OpenDrug can accurately predict drug response and also can be validated by 
- synergistic drug combination data.
-
+---
 
 ## License
 DeepDrug is licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0

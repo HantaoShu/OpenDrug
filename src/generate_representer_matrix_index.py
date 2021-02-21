@@ -47,7 +47,7 @@ if __name__ == '__main__':
     parser.add_argument('--drug_id', type=str, help='drug ID',default='11')
     parser.add_argument('--data_dir', type=str, default='../example_data/')
     parser.add_argument('--model_dir', type=str,default='../model/' )
-    parser.add_argument('--out_dir', type=str, default='../out/')
+    parser.add_argument('--out_dir', type=str, default='../representer_matrix_output/')
     parser.add_argument('--index_list', type=str, help='test index range',default='../example_data/11_index_list')
     parser.add_argument('--gpu', type=int, help='GPU ID')
     args = parser.parse_args()
@@ -147,4 +147,5 @@ if __name__ == '__main__':
         if not os.path.isdir(model_dir_name):
             os.makedirs(model_dir_name)
         np.save(f'{args.out_dir}/{args.drug_id}/{args.drug_id}_{str(test_index)}.npy', abs_result)
+
         print(test_index, 'finished')

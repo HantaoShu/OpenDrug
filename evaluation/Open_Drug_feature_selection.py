@@ -48,9 +48,9 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--drug_id', type=str, help='drug ID', default='11')
     parser.add_argument('--data_dir', type=str, default='../example_data/')
-    parser.add_argument('--index_list', type=str, help='test index range')
+    parser.add_argument('--index_list', type=str, help='test index range',default='../example_data/11_index_list')
     parser.add_argument('--model_dir', type=str, default='../model/')
-    parser.add_argument('--output_dir', type=str, default='../output/OpenDrug/')
+    parser.add_argument('--output_dir', type=str, default='../evaluation_output/OpenDrug/')
     parser.add_argument('--gpu', type=int, help='GPU ID')
     args = parser.parse_args()
 
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     weights[:num_upsampling] = weights[:num_upsampling] * 4.0
 
     for test_index in index_list:
-        tmp_data_file_name = f'{args.data_dir}/{args.drug_id}/{args.drug_id}_{str(test_index)}.pickle'
+        tmp_data_file_name = f'{args.model_dir}/{args.drug_id}/{args.drug_id}_{str(test_index)}.pickle'
 
         with open(tmp_data_file_name, 'rb') as f:
             tmp_data = pickle.load(f)
@@ -203,7 +203,11 @@ if __name__ == '__main__':
         new_data['representer_feature_selection_result'] = {'p_list': p_list, 'y_test_pred_list': y_test_pred_list}
 
         # print (y_test_pred_list)
-        representor_file = f'{args.output_dir}/{drug_id}/r_{drug_id}_{test_index}.pickle'
+        if not os.path.isdir(args.output_dir):
+            os.makedirs(args.output_dir)
+        if not os.path.isdir(args.output_dir+'/'+drug_id):
+            os.makedirs(args.output_dir+'/'+drug_id)
+        representor_file = f'{args.output_dir}/{drug_id}/OpenDrug_{drug_id}_{test_index}.pickle'
 
         with open(representor_file, 'wb') as f:
             pickle.dump(new_data, f)
