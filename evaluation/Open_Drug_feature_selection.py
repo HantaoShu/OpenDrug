@@ -77,6 +77,7 @@ if __name__ == '__main__':
     sort_index = np.argsort(y.reshape(-1))
     X = X[sort_index]
     y = y[sort_index]
+    # we upsample cell line with low drug response auc to get better performance.
     num_samples = X.shape[0]
     num_features = X.shape[1]
     num_upsampling = int(X.shape[0] * 0.2)

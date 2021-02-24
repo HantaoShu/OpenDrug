@@ -138,6 +138,7 @@ def train_gcn(data_path,representer_value_matrix_dir_prefix):
         data = pickle.load(f)
     X = data['X']
     y = data['y']
+    # we upsample cell line with low drug response auc to get better performance.
     num_upsampling = int(X.shape[0] * 0.2)
     weights = np.ones(X.shape[0])
     weights[:num_upsampling] = weights[:num_upsampling] * 4.0
@@ -197,6 +198,7 @@ def train_gcn_random(data_path):
 
     X = data['X']
     y = data['y']
+    # we upsample cell line with low drug response auc to get better performance.
     num_upsampling = int(X.shape[0] * 0.2)
     weights = np.ones(X.shape[0])
     weights[:num_upsampling] = weights[:num_upsampling] * 4.0

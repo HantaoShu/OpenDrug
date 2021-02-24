@@ -76,6 +76,7 @@ if __name__ == '__main__':
 
     X = data['X']
     y = data['y']
+    # we upsample cell line with low drug response auc to get better performance.
     sort_index = np.argsort(y.reshape(-1))
     X = X[sort_index]
     y = y[sort_index]
