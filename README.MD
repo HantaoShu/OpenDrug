@@ -32,14 +32,15 @@ reanalysis the neural network.
 For further details, see Online Methods of our paper. 
 
 ## Sub-directories
-  - [src] contains implementation of OpenDrug used for the beer review data. 
-  - [example_data] contains one example drug data. The drug response data is save as pickle file.
-  - [baseline_methods] contains the implementation of baseline methods including elastic net, linear model, random 
+  - [**src**] contains implementation of OpenDrug used for the beer review data. 
+  - [**example_data**] contains one example drug data. The drug response data is save as pickle file.
+  - [**baseline_methods**] contains the implementation of baseline methods including elastic net, linear model, random 
   forest, and 
   SVR used
    in comparison.
-  - [evaluation] contains the implementation of GCN used in evaluating important training example identified by OpenDrug
-  
+  - [**evaluation**] contains the implementation of GCN used in evaluating important training example identified by 
+  OpenDrug
+  - [**ipynb**] contains the tutorial for processing data
 
 <br>
 
@@ -53,7 +54,7 @@ For further details, see Online Methods of our paper.
    deviations fell into the lowest 20% over all the 
    training samples, and gene mutation features with less than 5 somatic mutations across all the training samples.
    
-   We also provide a process tutorial in ipynb/GDSC_data_preprocessing.ipynb
+  - We also provide a process tutorial in ipynb/GDSC_data_preprocessing.ipynb
     
 <br>
 
@@ -78,7 +79,7 @@ For further details, see Online Methods of our paper.
         cd src
         python train.py --drug_id <drug_id> --data_dir <data_dir> --model_dir <model_dir>
         ```
-    - Baseline methods implementation used in our paper.
+    - Baseline method implementations used in our paper.
         ```
         cd baseline_methods
         python run_{elastic_net,linear_model,rf,svr}.py  --drug_id <drug_id> --data_dir <processed data path> --model_dir <path to save model> 
@@ -90,10 +91,10 @@ For further details, see Online Methods of our paper.
     python generate_representer_matrix_index.py --drug_id <drug_id> --data_dir <processed data path> --index_list <test_index_list> 
     --model_dir <model path> --output_dir <path to save interprate result> 
     ```
-    The input files including a test_index_list file which denotes the sample index that need to be interpreted. And 
-    above command provide two output files, feature importance and sample importance and both file is stored in numpy 
-    format. For feature importance file, the matrix weight (W<sub>ij</sub>) represent importance of feature j on 
-    training data i and for sample importance file, the matrix weight W<sub>i</sub> represent importance of sample i.
+    The input files including a test_index_list file which denotes the sample index that need to be interpreted.
+    
+    
+    Two output files, feature importance and sample importance  are stored in numpy format. For feature importance file, the matrix weight (W<sub>ij</sub>) represent importance of feature j on training data i and for sample importance file, the matrix weight W<sub>i</sub> represent importance of sample i.
 
 
 3. Evaluating important training example and feature
@@ -123,7 +124,7 @@ For further details, see Online Methods of our paper.
     The output result is saved in pickle file including person correlation with different percentage of top feature 
   selected.
   
-  ---
+    ---
     If you have any question, please feel free to contact to me.
 Email: sht18@mails.tsinghua.edu.cn, majianzhu@gmail.com
 
