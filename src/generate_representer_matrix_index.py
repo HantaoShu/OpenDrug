@@ -143,9 +143,14 @@ if __name__ == '__main__':
         decomposition_matrix = decomposition_matrix / l2_regularization_coefficient
         decomposition_matrix = decomposition_matrix / weights_i.sum()
         abs_result = np.absolute(decomposition_matrix.numpy())
+        importance = ((y_i_pred-y_i).squeeze() *torch.matmul(f_t,f_i.t())).cpu().detach().numpy()
+        example_importance = np.zeros(num_samples)
+        example_importance[:test_index] = importance[:test_index]
+        example_importance[test_index+1:] = importance[test_index:]
         model_dir_name = f'{args.out_dir}/{args.drug_id}/'
         if not os.path.isdir(model_dir_name):
             os.makedirs(model_dir_name)
-        np.save(f'{args.out_dir}/{args.drug_id}/{args.drug_id}_{str(test_index)}.npy', abs_result)
+        np.save(f'{args.out_dir}/{args.drug_id}/{args.drug_id}_{str(test_index)}_feature_importance.npy', abs_result)
+        np.save(f'{args.out_dir}/{args.drug_id}/{args.drug_id}_{str(test_index)}_example_importance.npy', example_importance)
 
         print(test_index, 'finished')

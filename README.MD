@@ -50,9 +50,11 @@ For further details, see Online Methods of our paper.
   
    - We selected genes from the “mini cancer genome panel” and further removed gene expression features for which the 
    standard 
-   deviations fell into the lowest 10% over all the 
-   training samples, and gene mutation features with less than 10 somatic mutations across all the training samples.
-
+   deviations fell into the lowest 20% over all the 
+   training samples, and gene mutation features with less than 5 somatic mutations across all the training samples.
+   
+   We also provide a process tutorial in ipynb/GDSC_data_preprocessing.ipynb
+    
 <br>
 
 ## Dependency
@@ -61,19 +63,26 @@ For further details, see Online Methods of our paper.
 - ogb 1.2.4+cu101
 - scikit-learn 0.23.2
 - lime 0.2.0.1
+- ax-platform 0.1.19
+
+
 ## Code Usage
 1. Train OpenDrug to predict drug response. 
-    ```
-    cd src
-    python train.py --drug_id <drug_id> --data_dir <data_dir> --model_dir <model_dir>
-    ```
-    Here, we provide a leave-one-out cross-validation implementation which is convenient for further interpreting model.
-    We also provide baseline methods implementation which are compared in our paper. Baseline methods can be trained using following command.
-
-    ```
-    cd baseline_methods
-    python run_{elastic_net,linear_model,rf,svr}.py  --drug_id <drug_id> --data_dir <processed data path> --model_dir <path to save model> 
-    ```
+    - Benchmark drug response performance for OpenDrug
+        ```
+        cd src
+        python train.py --drug_id <drug_id> --data_dir <data_dir> 
+        ```
+    - Leave-one-out cross-validation implementation which can be used in further interpreting model.
+        ```
+        cd src
+        python train.py --drug_id <drug_id> --data_dir <data_dir> --model_dir <model_dir>
+        ```
+    - Baseline methods implementation used in our paper.
+        ```
+        cd baseline_methods
+        python run_{elastic_net,linear_model,rf,svr}.py  --drug_id <drug_id> --data_dir <processed data path> --model_dir <path to save model> 
+        ```
 
 2. Interpreting OpenDrug and identify important training example and feature.
     ```
@@ -81,8 +90,11 @@ For further details, see Online Methods of our paper.
     python generate_representer_matrix_index.py --drug_id <drug_id> --data_dir <processed data path> --index_list <test_index_list> 
     --model_dir <model path> --output_dir <path to save interprate result> 
     ```
+    The input files including a test_index_list file which denotes the sample index that need to be interpreted. And 
+    above command provide two output files, feature importance and sample importance and both file is stored in numpy 
+    format. For feature importance file, the matrix weight (W<sub>ij</sub>) represent importance of feature j on 
+    training data i and for sample importance file, the matrix weight W<sub>i</sub> represent importance of sample i.
 
-    , where test_index_list denote the test example index list corresponding to index in processed data pickle. The output file is save in numpy format whose weight(W<sub>ij</sub>) represent importance of feature j on training data i.
 
 3. Evaluating important training example and feature
 
@@ -98,7 +110,7 @@ For further details, see Online Methods of our paper.
     python random_feature_selection.py --drug_id <drug_id> --data_dir <processed data path> --index_list 
     <test_index_list> --output_dir <path to save performance result> 
     python lime_feature_selection.py --drug_id <drug_id> --data_dir <processed data path> --index_list 
-    <test_index_list> --output_dir <path to save performance result> 
+    <test_index_list> --output_dir <path to save performance resault> 
     ```
    The output result is saved in pickle file including predicted drug response and test data index.
    
@@ -110,11 +122,12 @@ For further details, see Online Methods of our paper.
    ```
     The output result is saved in pickle file including person correlation with different percentage of top feature 
   selected.
+  
   ---
-If you have any question, please feel free to contact to me.
+    If you have any question, please feel free to contact to me.
 Email: sht18@mails.tsinghua.edu.cn, majianzhu@gmail.com
 
----
+    ---
 
 ## License
 OpenDrug is licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0

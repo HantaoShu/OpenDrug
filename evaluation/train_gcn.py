@@ -131,7 +131,7 @@ class Net(nn.Module):
         return y
 
 
-def train_gcn(data_path):
+def train_gcn(data_path,representer_value_matrix_dir_prefix):
     kf = KFold(n_splits=3, shuffle=True, random_state=1221)
 
     with open(data_path, 'rb') as f:
@@ -149,8 +149,9 @@ def train_gcn(data_path):
 
     gcn_results = np.zeros((2, 100))
     gcn_results[0] = np.linspace(0.00, 0.99, 100)
-    representer_value_matrix = data['representer_value_matrix']
-
+    representer_value_matrix  = np.zeros([num_samples,num_samples])
+    for i in range(num_samples):
+        representer_value_matrix[i] = np.load(representer_value_matrix_dir_prefix + '_' + str(i) + '_example_importance.npy')
     for index, p in tqdm(enumerate(gcn_results[0])):
 
         num_neighbors = int(num_samples * p)
@@ -251,10 +252,11 @@ if __name__ == '__main__':
     parser.add_argument('--data_path', type=str, default='../example_data/11.pickle')
     parser.add_argument('--type', type=str, default='OpenDrug')
     parser.add_argument('--output_dir', type=str, default='../evaluation_output/gcn/')
+    parser.add_argument('--representer_value_matrix_dir_prefix', type=str, default='../representer_matrix_output/11/11')
     args = parser.parse_args()
     if not os.path.isdir(args.output_dir):
         os.makedirs(args.output_dir)
     if args.type=='random':
         pickle.dump(train_gcn_random(args.data_path),open(args.output_dir+args.type+'.pkl','wb'))
     if args.type=='OpenDrug':
-        pickle.dump(train_gcn(args.data_path),open(args.output_dir+args.type+'.pkl','wb'))
+        pickle.dump(train_gcn(args.data_path,args.representer_value_matrix_dir_prefix),open(args.output_dir+args.type+'.pkl','wb'))
