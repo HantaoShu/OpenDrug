@@ -91,19 +91,29 @@ For further details, see Online Methods of our paper.
     python generate_representer_matrix_index.py --drug_id <drug_id> --data_dir <processed data path> --index_list <test_index_list> 
     --model_dir <model path> --output_dir <path to save interprate result> 
     ```
-    The input files including a test_index_list file which denotes the sample index that need to be interpreted.
+    The key idea of OpenDrug is that it can interpret drug response prediction model in a post-hoc way. For each 
+    test tumor sample, this script 
+    can be used to identify the most important training sample for the prediction (relate to the manuscript Eq.5) and
+     sample-specific feature(gene) importance for the prediction (related to manuscript Eq.6).
+    
+    Besides precessed data file and model file trained in step 1, the input files also including a test_index_list file which denotes the sample index that need to be interpreted.
     
     
-    Two output files, feature importance and sample importance  are stored in numpy format. For feature importance file, the matrix weight (W<sub>ij</sub>) represent importance of feature j on training data i and for sample importance file, the matrix weight W<sub>i</sub> represent importance of sample i.
+    This script generate two numpy format file, feature importance and sample importance. "*_feature_importance.npy" 
+    denotes to feature importance interprated by OpenDrug, the matrix weight (W<sub>ij</sub>) represent importance of
+     feature j on training data. And "*_sample_importance.npy" denotes to  the sample importance interprated by 
+     OpenDrug, 
+     the matrix weight W<sub>i</sub> represent importance of sample i.
 
 
 3. Evaluating important training example and feature
 
-    **Evaluation 1:** OpenDrug perform better than other methods with identified important training feature. 
+    **Evaluation 1:** OpenDrug perform outperform other methods by using identified important training feature. 
     ```
     cd evaluation
     python Open_Drug_feature_selection.py --drug_id <drug_id> --data_dir <processed data path> --index_list 
     <test_index_list> --model_dir <saved training model> --output_dir <path to save performance result> 
+    --representer_value_matrix_dir_prefix <path of representer graph calculated in step 2> 
     ```
     Similarly, other feature interpreting baseline can be evaluated by 
     ```
@@ -117,9 +127,12 @@ For further details, see Online Methods of our paper.
    
    
    **Evaluation 2:** Verifying the representers using graph convolutional networks (GCN).
+   
    ```
    cd evaluation
-   python train_gcn.py --data_path <path save processed data and representer graph> --type <random/OpenDrug>
+   python train_gcn.py --data_path <path save processed data> --type <random/OpenDrug> 
+   --representer_value_matrix_dir_prefix < only used for OpenDrug, path of representer graph calculated in 
+   step 2>
    ```
     The output result is saved in pickle file including person correlation with different percentage of top feature 
   selected.

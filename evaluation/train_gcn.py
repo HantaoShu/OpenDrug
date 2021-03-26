@@ -63,7 +63,7 @@ def generate_random_graph(num_samples, num_neighbors):
     g_random_nx.add_nodes_from(range(num_samples))
     for dst in range(num_samples):
         g_random_nx.add_edge(dst, dst)
-        src_arr = np.random.choice(np.delete(np.arange(num_samples), dst), num_neighbors, replace=False)
+        src_arr = np.random.choice(np.delete(np.arange(num_samples), dst), num_neighbors-1, replace=False)
         for src in src_arr:
             g_random_nx.add_edge(src, dst)
     g_random_dgl = dgl.DGLGraph(g_random_nx)
@@ -75,7 +75,7 @@ def generate_graph(representer_value_matrix, num_samples, num_neighbors):
     g_nx.add_nodes_from(range(num_samples))
     for dst in range(num_samples):
         g_nx.add_edge(dst, dst)
-        src_arr = np.argsort(np.absolute(representer_value_matrix[dst]))[::-1][:num_neighbors]
+        src_arr = np.argsort(np.absolute(representer_value_matrix[dst]))[::-1][:num_neighbors-1]
         for src in src_arr:
             g_nx.add_edge(src, dst)
     g_dgl = dgl.DGLGraph(g_nx)
@@ -148,7 +148,7 @@ def train_gcn(data_path,representer_value_matrix_dir_prefix):
     y = torch.FloatTensor(y).cuda()
     weights = torch.FloatTensor(weights).cuda()
 
-    gcn_results = np.zeros((2, 100))
+    gcn_results = np.zeros((2, 1))
     gcn_results[0] = np.linspace(0.00, 0.99, 100)
     representer_value_matrix  = np.zeros([num_samples,num_samples])
     for i in range(num_samples):
@@ -186,7 +186,7 @@ def train_gcn(data_path,representer_value_matrix_dir_prefix):
                     break
             score_list.append(correlation)
         gcn_results[1, index] = np.mean(np.array(score_list))
-
+    print(gcn_results)
     return gcn_results
 
 
@@ -208,15 +208,16 @@ def train_gcn_random(data_path):
     y = torch.FloatTensor(y).cuda()
     weights = torch.FloatTensor(weights).cuda()
 
-    gcn_results = np.zeros((2, 100))
-    gcn_results[0] = np.linspace(0.00, 0.99, 100)
+    gcn_results = np.zeros((2, 1))
+    gcn_results[0,0] = np.linspace(0.00, 0.99, 100)
 
     for index, p in enumerate(gcn_results[0]):
 
         num_neighbors = int(num_samples * p)
+        print(num_neighbors)
         g_random_dgl = generate_random_graph(num_samples, num_neighbors)
-
         # train on random graph
+        print(index)
         score_list = []
         for train_index, test_index in kf.split(X):
             train_mask = np.zeros(num_samples, dtype=bool)
@@ -240,11 +241,12 @@ def train_gcn_random(data_path):
                 y_pred_test_upsample = torch.cat(
                     (y_pred[test_mask], y_pred[:num_upsampling][test_mask[:num_upsampling]].repeat(3, 1)))
                 correlation = pearson_corr(y_test_upsample.detach().cpu().numpy(), y_pred_test_upsample.detach().cpu().numpy())
+                # print(correlation,y_test_upsample,y_pred_test_upsample)
                 if not np.isnan(correlation):
                     break
             score_list.append(correlation)
         gcn_results[1, index] = np.mean(np.array(score_list))
-
+    print(gcn_results)
     return gcn_results
 
 

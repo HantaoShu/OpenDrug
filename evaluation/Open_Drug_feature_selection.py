@@ -51,6 +51,7 @@ if __name__ == '__main__':
     parser.add_argument('--index_list', type=str, help='test index range',default='../example_data/11_index_list')
     parser.add_argument('--model_dir', type=str, default='../model/')
     parser.add_argument('--output_dir', type=str, default='../evaluation_output/OpenDrug/')
+    parser.add_argument('--representer_value_matrix_dir_prefix', type=str, default='../representer_matrix_output/')
     parser.add_argument('--gpu', type=int, help='GPU ID')
     args = parser.parse_args()
 
@@ -83,71 +84,13 @@ if __name__ == '__main__':
     num_upsampling = int(X.shape[0] * 0.2)
     weights = np.ones(X.shape[0])
     weights[:num_upsampling] = weights[:num_upsampling] * 4.0
-
     for test_index in index_list:
-        tmp_data_file_name = f'{args.model_dir}/{args.drug_id}/{args.drug_id}_{str(test_index)}.pickle'
+        y_test_pred_list =[]
 
-        with open(tmp_data_file_name, 'rb') as f:
-            tmp_data = pickle.load(f)
-        y_test_pred_list = []
+        abs_result = np.load(f'{args.representer_value_matrix_dir_prefix}/{args.drug_id}/{args.drug_id}_{str(test_index)}_feature_importance.npy')
 
         train_index = np.ones(num_samples, dtype=bool)
         train_index[test_index] = False
-
-        X_t = X[test_index]
-        X_i = X[train_index]
-        y_t = y[test_index]
-        y_i = y[train_index]
-        weights_i = weights[train_index]
-
-        X_t = torch.FloatTensor(X_t).requires_grad_()
-        X_i = torch.FloatTensor(X_i)
-        y_t = torch.FloatTensor(y_t)
-        y_i = torch.FloatTensor(y_i)
-        weights_i = torch.FloatTensor(weights_i)
-
-        gradient = torch.zeros(num_features)
-        gradient_matrix = torch.zeros(num_neurons, num_features)
-        model = tmp_data
-
-        with torch.no_grad():
-            y_i_pred, f_i = model(X_i)
-        y_t_pred, f_t = model(X_t)
-
-        if abs(torch.sum(f_t)) > 10e-05:
-            y_t_pred.backward(retain_graph=True)
-            gradient = X_t.grad.data.clone().detach()
-            X_t.grad.zero_()
-
-            for index, item in enumerate(f_t):
-                item.backward(retain_graph=True)
-                gradient_matrix[index] = X_t.grad.data.clone().detach()
-                X_t.grad.zero_()
-
-        else:
-            for k in range(10):
-                f_t.data = 0.001 * (2 * torch.rand(f_t.shape) - 1)
-
-                y_t_pred.backward(retain_graph=True)
-                gradient = X_t.grad.data.clone().detach()
-                X_t.grad.zero_()
-
-                for index, item in enumerate(f_t):
-                    item.backward(retain_graph=True)
-                    gradient_matrix[index] += X_t.grad.data.clone().detach()
-                    X_t.grad.zero_()
-
-            gradient_matrix[index] = gradient_matrix[index] / 10.0
-
-        if abs(torch.sum(gradient_matrix)) < 10e-10:
-            gradient_matrix = 0.001 * (2 * torch.rand(gradient_matrix.shape) - 1)
-
-        decomposition_matrix = torch.matmul(f_i, gradient_matrix)
-        decomposition_matrix = (y_i - y_i_pred) * decomposition_matrix
-        decomposition_matrix = decomposition_matrix * weights_i.view(-1, 1)
-        decomposition_matrix = decomposition_matrix / l2_regularization_coefficient
-        decomposition_matrix = decomposition_matrix / weights_i.sum()
-        abs_result = np.absolute(decomposition_matrix.numpy())
 
         print('-=====', abs_result.shape)
 
@@ -208,7 +151,7 @@ if __name__ == '__main__':
             os.makedirs(args.output_dir)
         if not os.path.isdir(args.output_dir+'/'+drug_id):
             os.makedirs(args.output_dir+'/'+drug_id)
-        representor_file = f'{args.output_dir}/{drug_id}/OpenDrug_{drug_id}_{test_index}.pickle'
+        representor_file = f'{args.output_dir}/{drug_id}/OpenDrug_new_{drug_id}_{test_index}.pickle'
 
         with open(representor_file, 'wb') as f:
             pickle.dump(new_data, f)
