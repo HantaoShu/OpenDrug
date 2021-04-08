@@ -34,9 +34,8 @@ For further details, see Online Methods of our paper.
 ## Sub-directories
   - [**src**] contains implementation of OpenDrug used for the beer review data. 
   - [**example_data**] contains one example drug data. The drug response data is save as pickle file.
-  - [**baseline_methods**] contains the implementation of baseline methods including elastic net, linear model, random 
-  forest, and 
-  SVR used
+  - [**baseline_methods**] contains the implementation of baseline methods including elastic net, linear model, and random 
+  forest used
    in comparison.
   - [**evaluation**] contains the implementation of GCN used in evaluating important training example identified by 
   OpenDrug
@@ -82,7 +81,7 @@ For further details, see Online Methods of our paper.
     - Baseline method implementations used in our paper.
         ```
         cd baseline_methods
-        python run_{elastic_net,linear_model,rf,svr}.py  --drug_id <drug_id> --data_dir <processed data path> --model_dir <path to save model> 
+        python run_{elastic_net,linear_model,rf}.py  --drug_id <drug_id> --data_dir <processed data path> --model_dir <path to save model> 
         ```
 
 2. Interpreting OpenDrug and identify important training example and feature.
