@@ -98,9 +98,15 @@ For further details, see Online Methods of our paper.
     Besides precessed data file and model file trained in step 1, the input files also including a test_index_list file which denotes the sample index that need to be interpreted.
     
     
+<<<<<<< HEAD
     This script generate two numpy format file, feature importance and sample importance. "\*\_feature_importance.npy" 
     denotes to feature importance interprated by OpenDrug, the matrix weight (W<sub>ij</sub>) represent importance of
      feature j on training data. And "\*\_sample_importance.npy" denotes to  the sample importance interprated by 
+=======
+    This script generate two numpy format file, feature importance and sample importance. "*\_feature\_importance.npy" 
+    denotes to feature importance interprated by OpenDrug, the matrix weight (W<sub>ij</sub>) represent importance of
+     feature j on training data. And "*\_sample\_importance.npy" denotes to  the sample importance interprated by 
+>>>>>>> 1407548 (update README)
      OpenDrug, 
      the matrix weight W<sub>i</sub> represent importance of sample i.
 
