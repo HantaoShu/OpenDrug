@@ -32,7 +32,7 @@ reanalysis the neural network.
 For further details, see Online Methods of our paper. 
 
 ## Sub-directories
-  - [**src**] contains implementation of OpenDrug used for the beer review data. 
+  - [**src**] contains implementation of OpenDrug used for the peer review. 
   - [**example_data**] contains one example drug data. The drug response data is save as pickle file.
   - [**baseline_methods**] contains the implementation of baseline methods including elastic net, linear model, and random 
   forest used
